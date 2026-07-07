@@ -1,4 +1,4 @@
-name: Deploy static app to GitHub Pages
+name: Build and deploy Vite app
 
 on:
   push:
@@ -17,17 +17,33 @@ concurrency:
 
 jobs:
   build:
-    name: Upload static site
+    name: Build React app for Pages
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build for GitHub Pages
+        run: pnpm build:pages
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: dist
 
   deploy:
     name: Deploy to GitHub Pages
