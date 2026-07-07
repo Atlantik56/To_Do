@@ -1,0 +1,91 @@
+.form {
+  position: sticky;
+  top: 18px;
+  display: grid;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(23, 26, 36, 0.96), rgba(14, 16, 23, 0.96));
+  box-shadow: var(--shadow);
+}
+
+.formHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  color: var(--accent-strong);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.form h2 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field span {
+  color: var(--muted-strong);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.gridFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.primaryButton,
+.ghostButton {
+  min-height: 44px;
+  padding: 0 1rem;
+}
+
+.primaryButton {
+  background: linear-gradient(135deg, var(--accent), #a478ff);
+  color: #ffffff;
+  box-shadow: 0 12px 32px rgba(124, 156, 255, 0.25);
+}
+
+.ghostButton {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted-strong);
+}
+
+@media (max-width: 1080px) {
+  .form {
+    position: static;
+  }
+}
+
+@media (max-width: 520px) {
+  .gridFields,
+  .actions {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    display: grid;
+  }
+}
