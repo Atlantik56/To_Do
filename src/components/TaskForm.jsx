@@ -1,19 +1,25 @@
 import { useEffect, useState } from 'react';
+import { minutesToTime, timeToMinutes } from '../utils/dateTime.js';
 import styles from './TaskForm.module.css';
 
-const emptyTask = {
-  title: '',
-  description: '',
-  priority: 'medium',
-  status: 'todo',
-};
+function buildEmptyTask(defaultDate) {
+  return {
+    title: '',
+    description: '',
+    priority: 'medium',
+    status: 'todo',
+    date: defaultDate,
+    startTime: '09:00',
+    endTime: '10:00',
+  };
+}
 
-function TaskForm({ editingTask, priorities, statuses, onCancelEdit, onSave }) {
-  const [form, setForm] = useState(emptyTask);
+function TaskForm({ defaultDate, editingTask, priorities, statuses, onCancelEdit, onSave }) {
+  const [form, setForm] = useState(() => buildEmptyTask(defaultDate));
 
   useEffect(() => {
-    setForm(editingTask ?? emptyTask);
-  }, [editingTask]);
+    setForm(editingTask ?? buildEmptyTask(defaultDate));
+  }, [editingTask, defaultDate]);
 
   function updateField(field, value) {
     setForm((currentForm) => ({ ...currentForm, [field]: value }));
@@ -25,19 +31,28 @@ function TaskForm({ editingTask, priorities, statuses, onCancelEdit, onSave }) {
     const title = form.title.trim();
     const description = form.description.trim();
 
-    if (!title) {
+    if (!title || !form.date) {
       return;
     }
+
+    const startTime = form.startTime || '09:00';
+    const endTime =
+      timeToMinutes(form.endTime || '10:00') > timeToMinutes(startTime)
+        ? form.endTime
+        : minutesToTime(timeToMinutes(startTime) + 30);
 
     onSave({
       title,
       description,
       priority: form.priority,
       status: form.status,
+      date: form.date,
+      startTime,
+      endTime,
     });
 
     if (!editingTask) {
-      setForm(emptyTask);
+      setForm(buildEmptyTask(defaultDate));
     }
   }
 
@@ -67,12 +82,21 @@ function TaskForm({ editingTask, priorities, statuses, onCancelEdit, onSave }) {
           value={form.description}
           onChange={(event) => updateField('description', event.target.value)}
           placeholder="Контекст, критерии готовности или важные детали"
-          rows="5"
+          rows="4"
           maxLength={260}
         />
       </label>
 
       <div className={styles.gridFields}>
+        <label className={styles.field}>
+          <span>Дата</span>
+          <input
+            type="date"
+            value={form.date}
+            onChange={(event) => updateField('date', event.target.value)}
+          />
+        </label>
+
         <label className={styles.field}>
           <span>Приоритет</span>
           <select
@@ -86,18 +110,40 @@ function TaskForm({ editingTask, priorities, statuses, onCancelEdit, onSave }) {
             ))}
           </select>
         </label>
+      </div>
+
+      <div className={styles.gridFields}>
+        <label className={styles.field}>
+          <span>Начало</span>
+          <input
+            type="time"
+            step={900}
+            value={form.startTime}
+            onChange={(event) => updateField('startTime', event.target.value)}
+          />
+        </label>
 
         <label className={styles.field}>
-          <span>Статус</span>
-          <select value={form.status} onChange={(event) => updateField('status', event.target.value)}>
-            {statuses.map((status) => (
-              <option key={status.value} value={status.value}>
-                {status.label}
-              </option>
-            ))}
-          </select>
+          <span>Окончание</span>
+          <input
+            type="time"
+            step={900}
+            value={form.endTime}
+            onChange={(event) => updateField('endTime', event.target.value)}
+          />
         </label>
       </div>
+
+      <label className={styles.field}>
+        <span>Статус</span>
+        <select value={form.status} onChange={(event) => updateField('status', event.target.value)}>
+          {statuses.map((status) => (
+            <option key={status.value} value={status.value}>
+              {status.label}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <div className={styles.actions}>
         {editingTask && (
